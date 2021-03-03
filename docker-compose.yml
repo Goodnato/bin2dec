@@ -67,17 +67,3 @@ services:
       - persistent:/var/lib/mysql
     networks:
       - networks_mysql
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    ports:
-      - 8080:80
-    environment:
-      MYSQL_USER: user
-      MYSQL_PASSWORD: test
-      MYSQL_ROOT_PASSWORD: test
-    depends_on:
-      - mysql
-    networks:
-      - networks_mysql
