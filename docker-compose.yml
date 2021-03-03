@@ -3,6 +3,8 @@ version: '3.8'
 networks:
   networks_nginx:
     driver: bridge
+  networks_redis:
+    driver: bridge
   networks_mysql:
     driver: bridge
 
@@ -23,6 +25,15 @@ services:
     networks:
       - networks_nginx
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    command: redis-server --requirepass Redis!
+    ports:
+      - "6379:6379"
+    networks:
+      - networks_redis
+
   laravel:
     build: ./.docker/php/.
     container_name: laravel
@@ -32,9 +43,12 @@ services:
       - ./src/laravel/:/var/www/html
       - ./.docker/php/config/php.ini:/usr/local/etc/php/conf.d/app-php.ini
     working_dir: /var/www/html
+    depends_on:
+      - nginx
     networks:
       - networks_nginx
       - networks_mysql
+      - networks_redis
 
   mysql:
     image: mysql:8
