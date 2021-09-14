@@ -1,0 +1,49 @@
+name: Node Tests
+
+env:
+  NODE_ENV: test
+  DB_HOST: mysql
+  DB_PORT: 3306
+  DB_USER: root
+  DB_PASS: 123
+  DB_NAME: bin2dec_node
+
+on:
+  push:
+    branches: [master]
+    
+jobs:
+  test-application:
+    runs-on: ubuntu-latest
+
+    container: node:14.16
+
+    defaults:
+      run:
+        working-directory: ./src/javascript/node
+        
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_DATABASE: ${{ env.DB_USER }}_test
+          MYSQL_USER: ${{ env.DB_USER }}
+          MYSQL_PASSWORD: ${{ env.DB_PASS }}
+        volumes:
+          - mysql:/var/lib/mysql
+        ports:
+          - ${{ env.DB_PORT }}
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+
+      - name: Install dependencies
+        run: yarn install
+        
+      - name: Run Migrations
+        run: yarn typeorm migration:run
+
+      - name: Run Jest
+        run: yarn test

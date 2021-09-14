@@ -1,0 +1,64 @@
+version: '3.8'
+
+networks:
+  networks_mysql:
+  networks_java:
+  networks_node:
+    driver: bridge
+
+volumes: 
+  persistent:
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: ${CONTAINER_NAME_MYSQL}${CONTAINER_NICKNAME}
+    ports:
+      - ${PORT_MYSQL}:${PORT_MYSQL}
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./.docker/mysql/data:/docker-entrypoint-initdb.d
+      - ./.docker/mysql/config:/etc/mysql/conf.d
+      - persistent:/var/lib/mysql
+    networks:
+      - networks_mysql
+
+  node:
+    build: 
+      context: ./.docker/node/
+      dockerfile: Dockerfile
+      args: 
+        UID: ${UID}
+        USERNAME: ${USERNAME}
+    container_name: ${CONTAINER_NAME_NODE}${CONTAINER_NICKNAME}
+    ports:
+      - ${PORT_NODE}:${PORT_NODE}
+      - 9229:9229
+    volumes:
+      - ./src/javascript:/var/www/html/javascript
+    working_dir: /var/www/html/javascript
+    tty: true
+    networks:
+      - networks_node
+      - networks_mysql
+
+  java:
+    build: 
+     context: ./.docker/java/
+     dockerfile: Dockerfile
+     args: 
+       UID: ${UID}
+       USERNAME: ${USERNAME}
+    container_name: ${CONTAINER_NAME_JAVA}${CONTAINER_NICKNAME}
+    ports: 
+      - ${PORT_JAVA}:${PORT_JAVA}
+    volumes:
+      - ./src/java:/var/www/html/java
+    working_dir: /var/www/html/java
+    tty: true
+    networks:
+      - networks_java
+      - networks_mysql
