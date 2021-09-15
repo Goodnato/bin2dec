@@ -1,4 +1,4 @@
-import { getCustomRepository, Repository } from "typeorm";
+import { getCustomRepository } from "typeorm";
 import { ConvertsRepository } from "../repositories/ConvertsRepository";
 
 interface IConvertResponse {
@@ -20,6 +20,19 @@ class ConvertsService {
             }));
         }
 
+        return await convertsRepository.save(convertsRepository.create({
+            binary: binary,
+            decimal: this.convertBinToDec(binary),
+            status: 1,
+            message: "Success"
+        }));
+    }
+
+    private validationBinary(binary: string): boolean {
+        return /^[01]+$/.test(binary);
+    }
+
+    private convertBinToDec(binary: string): number {
         let listNumbers = binary.toString().split('');
         let decimal = 0;
         let length = listNumbers.length - 1;
@@ -27,16 +40,7 @@ class ConvertsService {
             decimal += parseInt(value) * 2 ** length--
         );
 
-        return await convertsRepository.save(convertsRepository.create({
-            binary: binary,
-            decimal: decimal,
-            status: 1,
-            message: "Success"
-        }));
-    }
-
-    public validationBinary(binary: string): boolean {
-        return /^[01]+$/.test(binary);
+        return decimal;
     }
 }
 
