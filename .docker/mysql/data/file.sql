@@ -1,2 +1,5 @@
 CREATE DATABASE IF NOT EXISTS `bin2dec_node`;
 CREATE DATABASE IF NOT EXISTS `bin2dec_node_test`;
+
+CREATE DATABASE IF NOT EXISTS `bin2dec_java`;
+CREATE DATABASE IF NOT EXISTS `bin2dec_java_test`;
