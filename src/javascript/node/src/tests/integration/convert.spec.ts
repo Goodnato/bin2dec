@@ -27,19 +27,24 @@ afterAll(async () => {
 })
 
 describe('Convert binary to decimal', () => {
-    it('should return correct decimal when convertion completed correct', async () => {
-        const binary = "101111101";
-
-        const { decimal } = await convertService.create(binary)
-
-        expect(decimal).toBe(381)
-    })
-
     it('should return success status when convertion completed correct', async () => {
         const binary = "000101";
 
         const { status } = await convertService.create(binary)
 
         expect(status).toBe(1)
+    })
+    
+    it('should return object when convertion completed correct', async () => {
+        const binary = "101111101";
+
+        const result = await convertService.create(binary)
+
+        expect(result).toEqual(expect.objectContaining({
+            binary,
+            decimal: 381,
+            status: 1,
+            message: "Success"
+        }))
     })
 })
