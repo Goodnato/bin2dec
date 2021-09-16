@@ -1,6 +1,11 @@
 import { createConnection, getConnection, MigrationExecutor } from 'typeorm';
 import { ConvertsService } from '../../services/ConvertsService';
 
+let convertService: ConvertsService;
+beforeEach(() => {
+    convertService = new ConvertsService();    
+})
+
 beforeAll(async () => {
     const connection = await createConnection();
 
@@ -25,7 +30,6 @@ describe('Convert binary to decimal', () => {
     it('should return correct decimal when convertion completed correct', async () => {
         const binary = "101111101";
 
-        const convertService = new ConvertsService();
         const { decimal } = await convertService.create(binary)
 
         expect(decimal).toBe(381)
@@ -34,7 +38,6 @@ describe('Convert binary to decimal', () => {
     it('should return success status when convertion completed correct', async () => {
         const binary = "000101";
 
-        const convertService = new ConvertsService();
         const { status } = await convertService.create(binary)
 
         expect(status).toBe(1)
